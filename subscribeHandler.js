@@ -14,7 +14,7 @@
    * @event twitchSubscribeInitialized
    */
   $.bind('twitchSubscribesInitialized', function () {
-    if (!$.bot.isModuleEnabled('./handlers/subscribeHandler.js')) {
+    if (!$.bot.isModuleEnabled('./handlers/subsribeHandler.js')) {
       return;
     }
 
@@ -25,7 +25,7 @@
    * @event twitchSubscribe
    */
   $.bind('twitchSubscribe', function (event) {
-    if (!$.bot.isModuleEnabled('./handlers/subscribeHandler.js')) {
+    if (!$.bot.isModuleEnabled('./handlers/subsribeHandler.js')) {
       return;
     }
 
@@ -33,9 +33,8 @@
 
     if (!$.inidb.exists('subscribed', subscriber)) {
       $.inidb.set('subscribed', subscriber, 'true');
-      if (subReward > 0) {
-        $.inidb.incr('points', subscriber, subReward);
-      }
+    } else if (subReward > 0 && $.bot.isModuleEnabled('./core/pointSystem.js')) {
+      $.inidb.incr('points', subscriber, subReward);
     }
   });
 
@@ -43,7 +42,7 @@
    * @event twitchUnSubscribe
    */
   $.bind('twitchUnsubscribe', function (event) {
-    if (!$.bot.isModuleEnabled('./handlers/subscribeHandler.js')) {
+    if (!$.bot.isModuleEnabled('./handlers/subsribeHandler.js')) {
       return;
     }
 
@@ -235,7 +234,7 @@
       $.registerChatCommand('./handlers/subscribehandler.js', 'subwelcometoggle', 2);
       $.registerChatCommand('./handlers/subscribehandler.js', 'resubwelcometoggle', 2);
       $.registerChatCommand('./handlers/subscribehandler.js', 'subscribereward', 2);
-      $.registerChatCommand('./handlers/subscribehandler.js', 'subscribecount', 2);
+      $.registerChatCommand('./handlers/subscribehandler.js', 'subscribercount', 2);
       $.registerChatCommand('./handlers/subscribehandler.js', 'submessage', 2);
       $.registerChatCommand('./handlers/subscribehandler.js', 'resubmessage', 2);
       $.registerChatCommand('./handlers/subscribehandler.js', 'subscribers', 2);
