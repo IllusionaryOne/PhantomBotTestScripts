@@ -14,7 +14,7 @@
    * @event twitchSubscribeInitialized
    */
   $.bind('twitchSubscribesInitialized', function () {
-    if (!$.bot.isModuleEnabled('./handlers/subscribehandler.js')) {
+    if (!$.bot.isModuleEnabled('./handlers/subscribeHandler.js')) {
       return;
     }
 
