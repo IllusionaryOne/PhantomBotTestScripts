@@ -5,4 +5,9 @@
 Hi there! If you have found this you have found an area that IllusionaryOne will be placing test scripts for PhantomBot.
 
 ## Disclaimer
-These scripts may break PhantomBot.  They may not work.  **Use at your own risk.**
+These scripts may break PhantomBot.  They may not work.  **Use at your own risk.**  
+
+## PhantomBot
+The official repository for PhantomBot can be found at: https://github.com/PhantomBot/PhantomBot
+For more information about PhantomBot: https://phantombot.net/
+
