@@ -96,7 +96,7 @@
         }
 
         if (message.indexOf('(sender)') != -1) {
-            message.replace(reSenderTag, $.username.resolve(event.getSender()))
+            message = message.replace(reSenderTag, $.username.resolve(event.getSender()))
         }
 
         // Get the URL for a customapi, if applicable, and process $1 - $9.  See below about that.
