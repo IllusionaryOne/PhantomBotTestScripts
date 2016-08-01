@@ -359,9 +359,11 @@
         }
     });
 
+    $.consoleLn('timeSystem: calling setInterval')
     $.log.file('timeSystem', 'calling setInterval');
     // Set an interval for increasing all current users logged time
     interval = setInterval(function() {
+        $.consoleLn('timeSystem: setInterval(): online=' + $.isOnline($.channelName) + ' offlineTime=' + keepTimeWhenOffline);
         $.log.file('timeSystem', 'setInterval(): online=' + $.isOnline($.channelName) + ' offlineTime=' + keepTimeWhenOffline);
         var username, 
             i;
@@ -371,6 +373,7 @@
                 username = $.users[i][0].toLowerCase();
                 var oldtime = $.inidb.get('time', username);
                 $.inidb.incr('time', username, 61);
+                $.consoleLn('timeSystem: user[' + username + '] old=' + oldtime + ' new=' + $.inidb.get('time', username));
                 $.log.file('timeSystem', 'user[' + username + '] old=' + oldtime + ' new=' + $.inidb.get('time', username));
             }
         }
