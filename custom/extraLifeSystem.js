@@ -8,23 +8,6 @@
  * No warranty is implied or provided.
  *
  * @author illusionaryone
- *
- * Sample Output:
- * 
- * !extralife
- * [11-01-2016 @ 12:25:15.871 MDT] [CHAT] I am participating in Extra Life! Please consider making a donation at: https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=myID
- * 
- * !extralife total
- * [11-01-2016 @ 12:25:44.603 MDT] [CHAT] Extra Life Donation Total Raised / Goal: 0 / 100. Thanks for all of the support!
- * 
- * !extralife last
- * [11-01-2016 @ 12:23:27.799 MDT] [CHAT] No recent donations found!
- * 
- * Using sample JSON data for the last donation as I have no donations:
- * 
- * !extralife last
- * [11-01-2016 @ 12:26:45.046 MDT] [CHAT] Last donation was in the amount of $100 received from Alex Muench with this message: Great job raising money!
- * 
  */
 
 (function() {
@@ -43,7 +26,7 @@
      * The URL is calculated automatically, change it if you desire. This URL is presented
      * in chat.
      */
-    var extraLifeID = '';
+    var extraLifeID = '238021';
     var extraLifeURL = 'https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=' + extraLifeID;
 
     /**
@@ -95,8 +78,54 @@
         var donorName = jsonObj[0].donorName;
         var donationAmount = jsonObj[0].donationAmount;
 
-        /* Note that $ is used as there is no currency value returned by Extra Life and therefore $ is assumed. */
         return 'Last donation was in the amount of $' + donationAmount + ' received from ' + donorName + ' with this message: ' + message;
+    }
+
+    /**
+     * @function pullExtraLifeDonations
+     */
+    function pullExtraLifeDonationsInterval() {
+        var url = 'http://www.extra-life.org/index.cfm?fuseaction=donorDrive.participantDonations&participantID=' + extraLifeID + '&format=json';
+        var HttpResponse = Packages.com.gmt2001.HttpResponse;
+        var HttpRequest = Packages.com.gmt2001.HttpRequest;
+        var HashMap = Packages.java.util.HashMap;
+        var responseData = HttpRequest.getData(HttpRequest.RequestType.GET, url, "", new HashMap());
+        var jsonObj = JSON.parse(responseData.content);
+        var firstRun = $.getIniDbBoolean('extralife', 'firstrun', true);
+
+        if (jsonObj[0] === undefined) {
+            if (firstRun) {
+                $.inidb.set('extralife', 'firstrun', 'false');
+            }
+            return;
+        }
+
+        for (var i = 0; i < jsonObj.length; i++) {
+            var message = jsonObj[i].message;
+            var donorName = jsonObj[i].donorName;
+            var donationAmount = jsonObj[i].donationAmount;
+            var createdOn = jsonObj[i].createdOn;
+
+            /* As ExtraLife does not provide a unique ID for a donation, we have to assume that createdOn is unique
+             * enough to use as the last donation point in combination with the donorName.
+             */
+            if ($.inidb.exists('extralife', donorName + '_' + createdOn)) {
+                continue;
+            }
+
+            $.inidb.set('extralife', donorName + '_' + createdOn, donationAmount);
+
+            /* If this is the first time that this has ever been ran, do not output any data to chat. This way we do not spam out
+             * any previous donations.  Do note that this will spam out any donations that are received within the interval window.
+             */
+            if (!firstRun) {
+                $.say('Received a new donation of $' + donationAmount + ' received from ' + donorName + ' with this message: ' + message);
+            }
+        }
+
+        if (firstRun) {
+            $.inidb.set('extralife', 'firstrun', 'false');
+        }
     }
 
     /**
@@ -138,6 +167,8 @@
     $.bind('initReady', function() {
         if ($.bot.isModuleEnabled('./systems/extraLifeSystem.js')) {
             $.registerChatCommand('./systems/extraLifeSystem.js', 'extralife', 7);
+
+            setInterval(function() { pullExtraLifeDonationsInterval(); }, 20e3);
         }
     });
 
