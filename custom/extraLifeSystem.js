@@ -43,7 +43,7 @@
      * The URL is calculated automatically, change it if you desire. This URL is presented
      * in chat.
      */
-    var extraLifeID = '238021';
+    var extraLifeID = '';
     var extraLifeURL = 'https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=' + extraLifeID;
 
     /**
