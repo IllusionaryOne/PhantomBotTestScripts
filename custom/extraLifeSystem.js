@@ -26,7 +26,7 @@
      * The URL is calculated automatically, change it if you desire. This URL is presented
      * in chat.
      */
-    var extraLifeID = '238021';
+    var extraLifeID = '';
     var extraLifeURL = 'https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=' + extraLifeID;
 
     /**
@@ -168,7 +168,9 @@
         if ($.bot.isModuleEnabled('./systems/extraLifeSystem.js')) {
             $.registerChatCommand('./systems/extraLifeSystem.js', 'extralife', 7);
 
-            setInterval(function() { pullExtraLifeDonationsInterval(); }, 20e3);
+            if (extraLifeID.length > 0) {
+                setInterval(function() { pullExtraLifeDonationsInterval(); }, 20e3);
+            }
         }
     });
 
