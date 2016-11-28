@@ -68,8 +68,7 @@
          * @commandpath duel - Attempt to duel the captain, receive a reward or a penalty
          * @commandpath promotion - Attempt to receive a promotion, receive a reward or a penalty
          */
-        if (command.equals('repair') || command.equals('pirates') ||
-            command.equals('duel') || command.equals('promotion')) {
+        if (command.equals('repair') || command.equals('pirates') || command.equals('duel') || command.equals('promotion')) {
             d1 = $.randRange(1, 2);
             d2 = $.randRange(1, 2);
 
