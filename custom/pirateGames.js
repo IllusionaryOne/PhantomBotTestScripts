@@ -6,43 +6,37 @@
  * @author illusionaryone
  */
 (function() {
+
+    /* List of pirate themed game commands. */
+    var commandList = [ 'repair', 'pirates', 'duel', 'promotion' ];
+
     /* Attempt, within reason, to always generate a random response. */
     var lastRandom = {};
-    lastRandom.repair = -1;
-    lastRandom.pirates = -1;
-    lastRandom.duel = -1;
-    lastRandom.promotion = -1;
 
     /* Keep track of the number of responses. */
     var responseCounts = {};
     responseCounts.loaded = false;
-    responseCounts.repair = {};
-    responseCounts.pirates = {};
-    responseCounts.duel = {};
-    responseCounts.promotion = {};
 
-    responseCounts.repair.win = 0;
-    responseCounts.repair.lost = 0;
-    responseCounts.pirates.win = 0;
-    responseCounts.pirates.lost = 0;
-    responseCounts.duel.win = 0;
-    responseCounts.duel.lost = 0;
-    responseCounts.promotion.win = 0;
-    responseCounts.promotion.lost = 0;
+    /* Populate the response counts and last random objects. */
+    for (idx in commandList) {
+        lastRandom[commandList[idx]] = -1;
+        responseCounts[commandList[idx]] = {};
+        responseCounts[commandList[idx]].win = 0;
+        responseCounts[commandList[idx]].lost = 0;
+    }
     
     /**
      * @function loadResponses
      */
     function loadResponses() {
-        var i,
-            responseList = [ 'repair', 'pirates', 'duel', 'promotion' ];
+        var i;
 
-        for (idx in responseList) {
-            for (i = 1; $.lang.exists('pirate.' + responseList[idx] + '.win.' + i); i++) {
-                responseCounts[responseList[idx]].win++;
+        for (idx in commandList) {
+            for (i = 1; $.lang.exists('pirate.' + commandList[idx] + '.win.' + i); i++) {
+                responseCounts[commandList[idx]].win++;
             }
-            for (i = 1; $.lang.exists('pirate.' + responseList[idx] + '.lost.' + i); i++) {
-                responseCounts[responseList[idx]].lost++;
+            for (i = 1; $.lang.exists('pirate.' + commandList[idx] + '.lost.' + i); i++) {
+                responseCounts[commandList[idx]].lost++;
             }
         }
 
@@ -68,7 +62,7 @@
          * @commandpath duel - Attempt to duel the captain, receive a reward or a penalty
          * @commandpath promotion - Attempt to receive a promotion, receive a reward or a penalty
          */
-        if (command.equals('repair') || command.equals('pirates') || command.equals('duel') || command.equals('promotion')) {
+        if ($.list.hasKey(commandList, command)) {
             d1 = $.randRange(1, 2);
             d2 = $.randRange(1, 2);
 
@@ -100,10 +94,9 @@
             if (!responseCounts.loaded) {
                 loadResponses();
             }
-            $.registerChatCommand('./games/pirateGames.js', 'repair', 7);
-            $.registerChatCommand('./games/pirateGames.js', 'pirates', 7);
-            $.registerChatCommand('./games/pirateGames.js', 'duel', 7);
-            $.registerChatCommand('./games/pirateGames.js', 'promotion', 7);
+            for (idx in commandList) {
+                $.registerChatCommand('./games/pirateGames.js', commandList[idx], 7);
+            }
         }
     });
 })();
