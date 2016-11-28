@@ -9,7 +9,7 @@
     /* Attempt, within reason, to always generate a random response. */
     var lastRandom = {};
     lastRandom.repair = -1;
-    lastRandom.pirates = 1;
+    lastRandom.pirates = -1;
     lastRandom.duel = -1;
     lastRandom.promotion = -1;
 
