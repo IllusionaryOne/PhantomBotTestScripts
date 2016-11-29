@@ -48,9 +48,10 @@
      * @event command
      */
     $.bind('command', function(event) {
-        var sender = event.getSender().toLowerCase(),
+          var sender = event.getSender().toLowerCase(),
             command = event.getCommand().toLowerCase(),
             args = event.getArgs(),
+            victim = '',
             random,
             d1,
             d2,
@@ -66,13 +67,29 @@
             d1 = $.randRange(1, 2);
             d2 = $.randRange(1, 2);
 
+            /* If the first entry for a game has two parameters, we will assume that all entries for
+             * the game requires a sender and a victim.
+             */
+            if ($.lang.paramCount('pirate.' + command + '.win.1') == 2) {
+                if (args.length < 1) {
+                    $.say($.lang.get('pirate.' + command + '.needvictim'));
+                    return;
+                }
+                if (!$.userExists(args[0])) {
+                    $.say($.lang.get('pirate.' + command + '.needvictim'));
+                    return;
+                } else {
+                    victim = args[0];
+                }
+            }
+
             if (d1 == d2) {
                 do {
                     random = $.randRange(1, responseCounts[command].win);
                     loopCtr++;
                 } while (random == lastRandom[command] && loopCtr < 5); // Provide Sanity
                 lastRandom[command] = random;
-                $.say($.lang.get('pirate.' + command + '.win.' + random, $.resolveRank(sender)));
+                $.say($.lang.get('pirate.' + command + '.win.' + random, $.resolveRank(sender), $.resolveRank(victim)));
                 $.inidb.incr('points', sender, $.lang.get('pirate.' + command + '.win.points.' + random));
             } else {
                 do {
@@ -80,7 +97,7 @@
                     loopCtr++;
                 } while (random == lastRandom[command] && loopCtr < 5); // Provide Sanity
                 lastRandom[command] = random;
-                $.say($.lang.get('pirate.' + command + '.lost.' + random, $.resolveRank(sender)));
+                $.say($.lang.get('pirate.' + command + '.lost.' + random, $.resolveRank(sender), $.resolveRank(victim)));
                 $.inidb.decr('points', sender, $.lang.get('pirate.' + command + '.lost.points.' + random));
             }
         }
