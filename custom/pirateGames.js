@@ -75,8 +75,14 @@
                     $.say($.lang.get('pirate.' + command + '.needvictim'));
                     return;
                 }
+                if (args[0].startsWith('@')) {
+                    args[0] = args[0].substring(1);
+                }
                 if (!$.userExists(args[0])) {
                     $.say($.lang.get('pirate.' + command + '.needvictim'));
+                    return;
+                } else if (args[0].equalsIgnoreCase(sender) && $.lang.exists('pirate.' + command + '.notself')) {
+                    $.say($.lang.get('pirate.' + command + '.notself'));
                     return;
                 } else {
                     victim = args[0];
