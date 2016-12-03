@@ -10,7 +10,7 @@ In the *custom* folder you will find customized scripts as well as scripts writt
 **Debug Scripts**
 In the *debug* folder you will find scripts that IllusionaryOne may ask you to use to debug parts of PhantomBot.
 
-**Fixes**
+**Fixes**    
 In the *fixes* folder IllusionaryOne may provide hot-fixes for certain scripts.
 
 ## Disclaimer
