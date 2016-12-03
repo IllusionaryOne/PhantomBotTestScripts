@@ -44,6 +44,21 @@
         responseCounts.loaded = true;
     };
 
+    /** 
+     * @function hasKey
+     * @param {array} list
+     * @param {string} value
+     * @returns {boolean}
+     */
+    function hasKey(list, value) {
+        for (var i in list) {
+            if (list[i].equalsIgnoreCase(value)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    
     /**
      * @event command
      */
@@ -63,7 +78,7 @@
          * @commandpath duel - Attempt to duel the captain, receive a reward or a penalty
          * @commandpath promotion - Attempt to receive a promotion, receive a reward or a penalty
          */
-        if ($.list.hasKey(commandList, command)) {
+        if (hasKey(commandList, command)) {
             d1 = $.randRange(1, 2);
             d2 = $.randRange(1, 2);
 
