@@ -1,3 +1,10 @@
+/*
+ * handlers-randomTextHandler.js
+ *
+ * Language file for scripts/handlers/randomTextHandler.js
+ * @author IllusionaryOne
+ */
+
 /* Configuration for the random text generator. PhantomBot will randomly reply in chat with a line that
  * someone else produced, with random words replaced.
  *
