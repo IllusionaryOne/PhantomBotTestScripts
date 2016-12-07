@@ -1,3 +1,11 @@
+/*
+ * scripts/handlers/randomTextHandler.js
+ * Provides a Swear Jar feature and a feature to randomly reply in chat using lines that people have
+ * provided with random words replaced. Requires the language file that provides the configuration.
+ *
+ * @author IllusionaryOne
+ */
+
 (function() {
     function handleReplace(message) {
         var randReplace,
