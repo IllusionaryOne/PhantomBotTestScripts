@@ -147,6 +147,7 @@
 
     $.bind('ircChannelMessage', function(event) {
         var sender = event.getSender().toLowerCase(),
+            chatName = $.username.resolve(sender, event.getTags()),
             message = event.getMessage();
 
         /* The bot is immune. */
