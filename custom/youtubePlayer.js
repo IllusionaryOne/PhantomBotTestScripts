@@ -1458,6 +1458,7 @@
                            if (refund == 0) {
                                refund = $.inidb.get('pricecom', 'addsong');
                            }
+                           refund = parseInt(refund / 2);
                            if (refund > 0) {
                                $.inidb.incr('points', refundUser, parseInt(refund))
                                responseString = responseString + ' ' + $.lang.get('ytplayer.command.stealsong.refund', $.username.resolve(refundUser), refund, (refund == 1 ? $.pointNameSingle : $.pointNameMultiple));
