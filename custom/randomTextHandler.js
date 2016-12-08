@@ -43,9 +43,9 @@
                 lastReplace = -1;
             }
 
-            for (i = wordPos; i < messageSplit.length; i++) {
+            for (i = (wordPos - 1); i < messageSplit.length; i++) {
                 doReplace = 1;
-                if (i != wordPos) {
+                if (i != (wordPos - 1)) {
                     if (i - lastReplacePos < wordPos) {
                         doReplace = 0;
                     } else {
@@ -57,9 +57,13 @@
 
                 if (doReplace) {
                     // Determine which word to use in the random list.
+                    var replaceTries = 0;
                     randReplace = lastReplace;
                     while (randReplace == lastReplace) {
-                        randReplace = $.rand(replaceMax);
+                        randReplace = $.rand(replaceMax + 1);
+                        if (replaceTries++ > 5) {
+                            break;
+                        }
                     }
                     lastReplace = randReplace;
                     $.inidb.set('random_num', 'replacetxt_last', randReplace);
