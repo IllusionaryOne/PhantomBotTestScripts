@@ -1,11 +1,3 @@
-/*
- * scripts/handlers/randomTextHandler.js
- * Provides a Swear Jar feature and a feature to randomly reply in chat using lines that people have
- * provided with random words replaced. Requires the language file that provides the configuration.
- *
- * @author IllusionaryOne
- */
-
 (function() {
     function handleReplace(message) {
         var randReplace,
@@ -79,8 +71,9 @@
     }
 
     function handleSwearJar(chatName, sender, message) {
-        if ($.inidb.get('swearjar_users', sender) == 'off')
+        if ($.getIniDbString('swearjar_users', sender, 'off').equals('off')) {
             return 0;
+        }
 
         var foundSwear = false;
             swearWords = $.lang.get('randomtext.swearjar-words'),
@@ -111,40 +104,108 @@
         return 0;
     }
 
-    function swearJarCommand(chatName, sender, argsString) {
-        if (argsString.equalsIgnoreCase('toggle')) {
+    function swearJarCommand(chatName, sender, args) {
+        var jarAmount = $.inidb.get('swearjar_amount', sender),
+            maxStealAmount,
+            stealAmount;
+
+        if (args.length == 0) {
+            if (jarAmount == null) {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar-none', chatName));
+                return;
+            } else if (parseInt(jarAmount) == 0) {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar-empty', chatName));
+            } else {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar-amount', jarAmount, (parseInt(jarAmount) == 1 ? $.pointNameSingle : $.pointNameMultiple), chatName));
+            }
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase('toggle')) {
             var jarSetting = $.inidb.get('swearjar_users', sender);
             if (jarSetting == null || jarSetting == 'off') {
                 $.inidb.set('swearjar_users', sender, 'on');
-                $.say($.lang.get('randomtext.swearjar-on', chatName));
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar-on', chatName));
                 return;
             } else {
                 $.inidb.set('swearjar_users', sender, 'off');
-                $.say($.lang.get('randomtext.swearjar-off', chatName));
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar-off', chatName));
                 return;
             }
         }
 
-        var jarAmount = $.inidb.get('swearjar_amount', sender);
-        if (jarAmount == null) {
-            $.say($.lang.get('randomtext.swearjar-none', chatName));
-            return;
-        } else if (parseInt(jarAmount) == 0) {
-            $.say($.lang.get('randomtext.swearjar-empty', chatName));
-        } else {
-            $.say($.lang.get('randomtext.swearjar-amount', jarAmount, (parseInt(jarAmount) == 1 ? $.pointNameSingle : $.pointNameMultiple), chatName));
+        if (args[0].equalsIgnoreCase('steal')) {
+            if (jarAmount == null) {
+                maxStealAmount = 0;
+            } else if (jarAmount == 0) {
+                maxStealAmount = 0;
+            } else {
+                maxStealAmount = parseInt(jarAmount * (parseInt($.lang.get('randomtext.swearjar.steal.take.maxpercent')) / 100));
+            }
+
+            if (args.length == 1) {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage', getPointsString(maxStealAmount)));
+                return;
+            }
+            if (isNaN(args[1])) {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage', getPointsString(maxStealAmount)));
+                return;
+            }
+            if (parseInt(args[1]) > maxStealAmount) {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage', getPointsString(maxStealAmount)));
+                return;
+            }
+            stealAmount = parseInt(args[1]);
+
+            var randNumber = $.rand(100);
+            if (randNumber < parseInt($.lang.get('randomtext.swearjar.steal.oddspercent'))) {
+                stealAmount = parseInt(stealAmount * ($.randRange(parseInt($.lang.get('randomtext.swearjar.steal.win.minpercent')), 100) / 100));
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.success', getPointsString(stealAmount)));
+                $.inidb.incr('points', sender, stealAmount);
+                $.inidb.decr('swearjar_amount', sender, stealAmount);
+            } else {
+                var penaltyPoints = parseInt($.lang.get('randomtext.swearjar.steal.penalty.points'));
+                var penaltySeconds = parseInt($.lang.get('randomtext.swearjar.steal.penalty.timeout'));
+
+                if (penaltyPoints == 0 && penaltySeconds == 0) {
+                    $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.caught.nopenalty'));
+                } else if (penaltyPoints > 0 && penaltySeconds == 0) {
+                    if (penaltyPoints <= $.getIniDbNumber('points', sender, 0)) {
+                        $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.caught.penalty.points', getPointsString(penaltyPoints)));
+                    } else {
+                        $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.caught.nopenalty'));
+                    }
+                } else if (penaltyPoints == 0 && penaltySeconds > 0) {
+                    $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.caught.penalty.timeout', penaltySeconds));
+                } else if (penaltyPoints > 0 && penaltySeconds > 0) {
+                    if (penaltyPoints <= $.getIniDbNumber('points', sender, 0)) {
+                        $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.caught.penalty.both', getPointsString(penaltyPoints), penaltySeconds));
+                    } else {
+                        $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.caught.penalty.timeout', penaltySeconds));
+                    }
+                }
+
+                if (penaltyPoints > 0) {
+                    if (penaltyPoints <= $.getIniDbNumber('points', sender, 0)) {
+                        $.inidb.decr('points', sender, penaltyPoints);
+                    }
+                }
+
+                if (penaltySeconds > 0) {
+                    $.say('.timeout ' + sender + ' ' + penaltySeconds);
+                }
+            }
         }
-        return;
     }
 
     $.bind('command', function(event) {
         var sender = event.getSender().toLowerCase(),
             chatName = $.username.resolve(sender, event.getTags()),
             command = event.getCommand(),
-            argsString = event.getArguments().trim();
+            args = event.getArgs();
 
         if (command.equalsIgnoreCase('swearjar')) {
-            swearJarCommand(chatName, sender, argsString);
+            swearJarCommand(chatName, sender, args);
             return;
         }
     });
@@ -166,6 +227,8 @@
     $.bind('initReady', function() {
         if ($.bot.isModuleEnabled('./handlers/randomTextHandler.js')) {
             $.registerChatCommand('./handlers/randomTextHandler.js', 'swearjar', 7);
+            $.registerChatSubcommand('swearjar', 'steal', 7);
+            $.registerChatSubcommand('swearjar', 'toggle', 7);
         }
     });
 })();
