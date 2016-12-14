@@ -143,6 +143,10 @@
                 maxStealAmount = parseInt(jarAmount * (parseInt($.lang.get('randomtext.swearjar.steal.take.maxpercent')) / 100));
             }
 
+            if (maxStealAmount == 0) {
+                $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage.emptyjar'));
+                return;
+            }
             if (args.length == 1) {
                 $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage', getPointsString(maxStealAmount)));
                 return;

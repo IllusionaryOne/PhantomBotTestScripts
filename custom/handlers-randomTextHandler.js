@@ -61,6 +61,7 @@ $.lang.register('randomtext.swearjar-off', 'You will no longer use a swear jar, 
 $.lang.register('randomtext.swearjar-add', 'You add a $1 to your swear jar, $2');
 $.lang.register('randomtext.swearjar-broke', 'You have nothing to put into the swear jar, $1');
 $.lang.register('randomtext.swearjar.steal.usage', 'Usage: !swearjar steal [amount]. The most you can try to steal: $1');
+$.lang.register('randomtext.swearjar.steal.usage.emptyjar', 'Usage: !swearjar steal [amount]. However, you have nothing to steal!');
 $.lang.register('randomtext.swearjar.steal.success', 'You sneak out past bedtime to raid your swearjar and make out with $1 before your hear someone coming!');
 $.lang.register('randomtext.swearjar.steal.caught.nopenalty', 'You sneak out past bedtime to raid your swearjar and are caught!');
 $.lang.register('randomtext.swearjar.steal.caught.penalty.points', 'You sneak out past bedtime to raid your swearjar and are caught and you have $1 taken away from you!');
