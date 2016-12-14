@@ -151,7 +151,7 @@
                 $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage', getPointsString(maxStealAmount)));
                 return;
             }
-            if (parseInt(args[1]) > maxStealAmount) {
+            if (parseInt(args[1]) > maxStealAmount || parseInt(args[1]) == 0) {
                 $.say($.whisperPrefix(sender) + $.lang.get('randomtext.swearjar.steal.usage', getPointsString(maxStealAmount)));
                 return;
             }
