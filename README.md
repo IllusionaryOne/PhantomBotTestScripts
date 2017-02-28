@@ -1,4 +1,3 @@
-![IO Logo](https://avatars1.githubusercontent.com/u/12041043?v=3&s=96 "IO Logo") 
 # PhantomBotTestScripts
 
 ## Greetings
