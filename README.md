@@ -5,7 +5,7 @@
 Hi there! If you have found this you have found an area that IllusionaryOne will be placing various scripts for PhantomBot.  There are three types of scripts that are found here:    
 
 **Custom Scripts**    
-In the *custom* folder you will find customized scripts as well as scripts written for PhantomBot users.  Note that no warranty is provided or implied for these scripts.  
+In the *custom* folder you will find customized scripts as well as scripts written for PhantomBot users.  Note that no warranty is provided or implied for these scripts.  Do not ask for support.
 
 **Debug Scripts**
 In the *debug* folder you will find scripts that IllusionaryOne may ask you to use to debug parts of PhantomBot.
