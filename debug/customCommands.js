@@ -603,10 +603,8 @@
                 return;
             }
 
-$.consoleLn("addcom raw -> " + action + " | " + argsString);
             action = action.replace('!', '').toLowerCase();
             argsString = args.slice(1).join(' ');
-$.consoleLn("addcom clean -> " + action + " | " + argsString);
             if ($.commandExists(action)) {
                 $.say($.whisperPrefix(sender) + $.lang.get('customcommands.add.error'));
                 return;
@@ -626,11 +624,9 @@ $.consoleLn("addcom clean -> " + action + " | " + argsString);
             }
 
             $.say($.whisperPrefix(sender) + $.lang.get('customcommands.add.success', action));
-$.consoleLn("addcom add -> " + action);
             $.registerChatCommand('./commands/customCommands.js', action);
             $.inidb.set('command', action, argsString);
             customCommands[action] = argsString;
-$.consoleLn("addcom lookup -> " + customCommands[action]);
             return;
         }
 
@@ -892,14 +888,19 @@ $.consoleLn("addcom lookup -> " + customCommands[action]);
          * @commandpath commands - Provides a list of all available custom commands.
          */
         if (command.equalsIgnoreCase('commands')) {
+$.consoleLn('>> commands is being executed');
             var cmds = $.inidb.GetKeyList('command', ''),
                 aliases = $.inidb.GetKeyList('aliases', ''),
                 cmdList = [];
+$.consoleLn('built lists: cmds [' + cmds + '] aliases [' + aliases + ']');
 
             for (idx in cmds) {
                 if (!$.inidb.exists('disabledCommands', cmds[idx])) {
                     if (permCom(sender, cmds[idx], '') === 0) {
                         cmdList.push('!' + cmds[idx]);
+                    } else {
+
+$.consoleLn('!commands > ' + sender + ' does not have permission to run ' + cmds[idx]);
                     }
                 }
             }
@@ -913,6 +914,7 @@ $.consoleLn("addcom lookup -> " + customCommands[action]);
             if (cmdList.length > 0) {
                 $.paginateArray(cmdList, 'customcommands.cmds', ', ', true, sender);
             } else {
+$.consoleLn('!commands > trying to whisper to ' + sender);
                 $.say($.whisperPrefix(sender) + $.lang.get('customcommands.404.no.commands'));
             }
             return;
