@@ -888,19 +888,14 @@
          * @commandpath commands - Provides a list of all available custom commands.
          */
         if (command.equalsIgnoreCase('commands')) {
-$.consoleLn('>> commands is being executed');
             var cmds = $.inidb.GetKeyList('command', ''),
                 aliases = $.inidb.GetKeyList('aliases', ''),
                 cmdList = [];
-$.consoleLn('built lists: cmds [' + cmds + '] aliases [' + aliases + ']');
 
             for (idx in cmds) {
                 if (!$.inidb.exists('disabledCommands', cmds[idx])) {
                     if (permCom(sender, cmds[idx], '') === 0) {
                         cmdList.push('!' + cmds[idx]);
-                    } else {
-
-$.consoleLn('!commands > ' + sender + ' does not have permission to run ' + cmds[idx]);
                     }
                 }
             }
@@ -914,7 +909,6 @@ $.consoleLn('!commands > ' + sender + ' does not have permission to run ' + cmds
             if (cmdList.length > 0) {
                 $.paginateArray(cmdList, 'customcommands.cmds', ', ', true, sender);
             } else {
-$.consoleLn('!commands > trying to whisper to ' + sender);
                 $.say($.whisperPrefix(sender) + $.lang.get('customcommands.404.no.commands'));
             }
             return;
