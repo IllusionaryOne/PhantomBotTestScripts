@@ -21,4 +21,3 @@ The official repository for PhantomBot can be found at: https://github.com/Phant
 For more information about PhantomBot: https://phantombot.tv    
 Visit the community forums: https://community.phantombot.tv    
 Visit the documentation site: https://docs.phantombot.tv
-
