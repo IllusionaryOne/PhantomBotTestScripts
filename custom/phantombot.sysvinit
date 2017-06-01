@@ -1,0 +1,89 @@
+#!/bin/bash
+#
+# phantombot.sysvinit
+#
+# This script is for use on Linux systems that use a SYSVINIT style startup.
+# It would be placed under /etc/init.d on the systems that support this
+# style of startup/shutdown script.
+#
+# This starts and stops PhantomBot, a Twitch Chat application. This script
+# expects that PhantomBot is installed under the /opt/phantombot directory
+# and that a user named phantombot has been created that is in the group
+# phantombot.  If this is not the case, then change the related entries.
+# You must also update the value of the PID file to include your botname.
+#
+# ** This has not been tested, this script may not function at all. **
+# ** Use at your own risk. **
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+PHANTOMBOT=/opt/phantombot/launch-service.sh
+PID_FILE=/opt/phantombot/PhantomBot.yourbotname.pid
+RUN_AS_USER=phantombot
+RUN_AS_GROUP=phantombot
+
+# Allow anyone to run status
+if [ "$1" = "status" ] ; then
+    status ${PHANTOMBOT}
+    RETVAL=$?
+    exit $RETVAL
+fi
+
+# Non-root users are not allowed to do anything else.
+test $EUID = 0 || exit 4
+
+RETVAL=0
+
+start() {
+    test -x ${PHANTOMBOT} || exit 5
+
+    echo -n $"Starting ${PHANTOMBOT}: "
+    chroot --userspec=${RUN_AS_USER}:${RUN_AS_GROUP} / ${PHANTOMBOT}
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping ${PHANTOMBOT}: "
+    if [ -e ${PID_FILE} ] ; then
+        CHECK_PID=$(cat ${PID_FILE})
+        kill -2 ${CHECK_PID}
+        while kill -0 ${CHECK_PID} 2>/dev/null; do sleep 1; done
+    fi
+    echo
+    return 0
+}
+
+reload() {
+    stop
+    start
+}
+
+restart() {
+    stop
+    start
+}
+
+condrestart() {
+    [ -e ${PID_FILE} ] && restart
+    return 0
+}
+
+# Handle command line options.
+case "$1" in
+    start)
+        start ;;
+    stop)
+        stop ;;
+    restart)
+        restart ;;
+    reload|force-reload)
+        reload ;;
+    condrestart|try-restart)
+        condrestart ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        RETVAL=3
+esac
+
+exit $RETVAL
