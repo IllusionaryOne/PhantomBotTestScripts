@@ -229,8 +229,8 @@
     });
 
     $.bind('initReady', function() {
-        if ($.bot.isModuleEnabled('./handlers/randomTextHandler.js')) {
-            $.registerChatCommand('./handlers/randomTextHandler.js', 'swearjar', 7);
+        if ($.bot.isModuleEnabled('./custom/randomTextHandler.js')) {
+            $.registerChatCommand('./custom/randomTextHandler.js', 'swearjar', 7);
             $.registerChatSubcommand('swearjar', 'steal', 7);
             $.registerChatSubcommand('swearjar', 'toggle', 7);
         }
