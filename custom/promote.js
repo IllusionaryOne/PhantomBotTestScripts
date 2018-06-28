@@ -195,7 +195,7 @@
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
                 $.inidb.set('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + 'You (' + args[1] + ') will no longer be promoted in #' + promoteChannel);
+                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will no longer be allowed to manage themselves');
                 return;
             }
 
@@ -212,7 +212,7 @@
                 }
 
                 $.inidb.del('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will be allowed to add themselves again.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will be allowed to manage themselves again.');
                 return;
             }
 
