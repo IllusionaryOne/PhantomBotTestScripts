@@ -195,7 +195,7 @@
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
                 $.inidb.set('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will no longer be promoted and will no longer be allowed to manage themselves');
+                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' has will no longer be promoted and will no longer be able to manage themselves.');
                 return;
             }
 
@@ -212,7 +212,7 @@
                 }
 
                 $.inidb.del('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will be allowed to manage themselves again.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will be allowed to add themselves again.');
                 return;
             }
 
@@ -222,7 +222,8 @@
                 } else {
                     $.discord.say(channel, $.discord.userPrefix(mention) + 'Users will now be able to manage themselves via !promote add and delete.');
                 }
-                allowSelfManage = $.setIniDbBoolean('promotesettings', 'allowselfmanage', !allowSelfManage);
+                allowSelfManage = !allowSelfManage;
+                $.setIniDbBoolean('promotesettings', 'allowselfmanage', allowSelfManage);
                 return;
             }
 
