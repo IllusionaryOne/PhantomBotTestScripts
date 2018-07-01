@@ -85,10 +85,13 @@
                     return;
                 }
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You need to provide a short biography.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You need to provide a short biography or use the keyword \'none\' (!promote add none).');
                     return;
                 }
                 var biography = args.splice(1).join(' ');
+                if (biography.equalsIgnoreCase('none')) {
+                    biography = '';
+                }
                 $.inidb.set('promotebio', twitchID, biography);
                 $.inidb.set('promoteids', twitchID, twitchName);
                 $.discord.say(channel, $.discord.userPrefix(mention) + 'You (' + twitchName + ') will now be promoted.');
@@ -118,10 +121,13 @@
                     return;
                 }
                 if (args[2] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You need to provide a short biography.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You need to provide a short biography or use the keyword \'none\' (!promote addother user none).');
                     return;
                 }
                 var biography = args.splice(2).join(' ');
+                if (biography.equalsIgnoreCase('none')) {
+                    biography = '';
+                }
                 $.inidb.set('promotebio', twitchID, biography);
                 $.inidb.set('promoteids', twitchID, args[1]);
                 $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will now be promoted.');
@@ -170,7 +176,8 @@
                 }
             
                 streamChannel = args[1].replace('#', '').toLowerCase();
-                if (streamchannel.equals('clear')) {
+                if (streamChannel.equals('clear')) {
+                    streamChannel = '';
                     $.inidb.set('promotesettings', 'streamchannel', '');
                     $.discord.say(channel, $.discord.userPrefix(mention) + 'Stream announcement channel has been cleared.');
                 } else {
