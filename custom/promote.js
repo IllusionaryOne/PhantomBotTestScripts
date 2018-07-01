@@ -359,6 +359,9 @@
     
             var twitchName = $.inidb.get('promoteids', twitchIDs[lastIdx]);
             var biography = $.inidb.get('promotebio', twitchIDs[lastIdx]);
+            if (biography.equals('')) {
+                biography = 'No biography provided.';
+            }
             $.discordAPI.sendMessageEmbed($.inidb.get('promotesettings', 'channel'), new Packages.sx.blah.discord.util.EmbedBuilder()
                                           .withThumbnail('http://iotv.me/i/followontwitch.jpg')
                                           .withTitle('https://twitch.tv/' + twitchName)
