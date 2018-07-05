@@ -97,7 +97,7 @@
         if (command.equalsIgnoreCase('promoteadm')) {
             if (action === undefined) {
                 $.discord.say(channel, $.discord.userPrefix(mention) + 
-                              '!promoteadm add | del | channel | streamchannel | revoke | allow | toggleselfmanage | togglestats | list | setinterval');
+                              '!promoteadm add | delete | channel | streamchannel | revoke | allow | toggleselfmanage | togglestats | list | setinterval');
                 return;
             }
 
