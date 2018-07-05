@@ -393,7 +393,7 @@
      */
     $.bind('initReady', function() {
         $.discord.registerCommand('./custom/promote.js', 'promote', 0);
-        $.discord.registerCommand('./custom/promote.js', 'promoteadm', 0);
+        $.discord.registerCommand('./custom/promote.js', 'promoteadm', 1);
         $.discord.registerSubCommand('promote', 'add', 0);
         $.discord.registerSubCommand('promote', 'delete', 0);
         $.discord.registerSubCommand('promoteadm', 'add', 1);
