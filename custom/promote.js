@@ -9,6 +9,7 @@
  * !promoteadm toggleselfmanage - If you do not want people to add themselves.
  * !promoteadm setinterval - Change the interval for promotion messages from 120 minutes to something else.
  * !promoteadm togglestats - Show follow and view stats or not.
+ * !promoteadm togglebanner - Display the channel banner or not.
  *
  * Then have folks !promote add themselves or you can !promote addother for them.
  *
@@ -21,6 +22,7 @@
  */
 (function() {
     var showStats = $.getSetIniDbBoolean('promotesettings', 'showstats', true);
+    var showBanner = $.getSetIniDbBoolean('promotesettings', 'showbanner', true);
     var promoteChannel = $.getSetIniDbString('promotesettings', 'channel', '');
     var streamChannel = $.getSetIniDbString('promotesettings', 'streamchannel', '');
     var allowSelfManage = $.getSetIniDbBoolean('promotesettings', 'allowselfmanage', true);
@@ -97,7 +99,7 @@
         if (command.equalsIgnoreCase('promoteadm')) {
             if (action === undefined) {
                 $.discord.say(channel, $.discord.userPrefix(mention) + 
-                              '!promoteadm add | delete | channel | streamchannel | revoke | allow | toggleselfmanage | togglestats | list | setinterval');
+                              '!promoteadm add | del | channel | streamchannel | revoke | allow | toggleselfmanage | togglestats | togglebanner | list | setinterval');
                 return;
             }
 
@@ -246,6 +248,18 @@
                 return;
             }
 
+            if (action.equalsIgnoreCase('togglebanner')) {
+                if (showBanner) {
+                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Banners will no longer show when a stream is announced.');
+                } else {
+                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Banners will show when a stream is announced.');
+                }
+                showBanner = !showBanner;
+                $.setIniDbBoolean('promotesettings', 'showbanner', showBanner);
+                return;
+            }
+
+
             if (action.equalsIgnoreCase('list')) {
                 var twitchIDs = $.inidb.GetKeyList('promoteids', '');
                 if (twitchIDs.length === 0) {
@@ -319,6 +333,7 @@
             var twitchName = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('display_name');
             var followers = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('followers');
             var views = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('views');
+            var banner = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('profile_banner');
             liveStreamers.push(twitchID);
 
             if (!$.inidb.exists('promoteonline', twitchID)) {
@@ -334,6 +349,9 @@
 
                     if (showStats) {
                         embedBuilder.appendField('Followers', followers, true).appendField('Views', views, true);
+                    }
+                    if (banner != null && showBanner) {
+                        embedBuilder.withImage(banner)
                     }
  
                     embedBuilder.withFooterText($.inidb.get('promotebio', twitchID))
