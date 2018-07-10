@@ -1,5 +1,5 @@
 /**
- * promote.js
+ * promoteSystem.js
  *
  * Install under /scripts/custom at this time.
  *
@@ -14,10 +14,7 @@
  * Then have folks !promote add themselves or you can !promote addother for them.
  *
  * TODO:
- * - Support more than 100 streamers.
  * - Add controls to the Beta Panel once that is the formal release.
- * - Allow streamers to set their own colors (maybe?)
- * - Add more fields?  Perhaps optionally !promote twitter or something?  I suppose the biography could have the twitter link in it though if people want.
  * 
  */
 (function() {
@@ -43,18 +40,17 @@
 
         if (command.equalsIgnoreCase('promote')) {
             if (action === undefined) {
-                $.discord.say(channel, $.discord.userPrefix(mention) + '!promote add [biography] | delete - Either add or ' +
-                              'delete yourself from being promoted automatically. When you add yourself, provide a short biography.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.usage'));
                 return;
             }
 
             if (action.equalsIgnoreCase('add') || action.equalsIgnoreCase('delete')) {
                 if (!allowSelfManage) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'No one is allowed to manage themselves, please speak to a moderator to be added or deleted.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.noselfmanage'));
                     return;
                 }
                 if (promoteChannel.length === 0 && streamChannel.length === 0) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Ask an admin to set a promote channel with !promote channel and/or !promote streamchannel');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.nochannels'));
                     return;
                 }
                 var twitchName = $.discord.resolveTwitchName(event.getSenderId());
@@ -64,18 +60,14 @@
                 }
                 var twitchID = $.username.getID(twitchName);
                 if ($.inidb.exists('promoterevoke', twitchID)) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You are no longer allowed to add yourself.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.revoked'));
                     return;
                 }
             }
           
             if (action.equalsIgnoreCase('add')) {
-                if ($.inidb.GetKeyList('promoteids', '').length > 99) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Only 100 streamers may be promoted at this time. Please ask an admin to remove someone.');
-                    return;
-                }
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You need to provide a short biography or use the keyword \'none\' (!promote add none).');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.add.nobio'));
                     return;
                 }
                 var biography = args.splice(1).join(' ');
@@ -84,47 +76,42 @@
                 }
                 $.inidb.set('promotebio', twitchID, biography);
                 $.inidb.set('promoteids', twitchID, twitchName);
-                $.discord.say(channel, $.discord.userPrefix(mention) + 'You (' + twitchName + ') will now be promoted.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.add.success', twitchName));
                 return;
             }
 
             if (action.equalsIgnoreCase('delete')) {
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + 'You (' + twitchName + ') will no longer be promoted.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.del.success', twitchName));
                 return;
             }
         }
 
         if (command.equalsIgnoreCase('promoteadm')) {
             if (action === undefined) {
-                $.discord.say(channel, $.discord.userPrefix(mention) + 
-                              '!promoteadm add | del | channel | streamchannel | revoke | allow | toggleselfmanage | togglestats | togglebanner | list | setinterval');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.usage'));
                 return;
             }
 
             if ((action.equalsIgnoreCase('add') || action.equalsIgnoreCase('delete')) && (promoteChannel.length === 0 && streamChannel.length === 0))  {
-                $.discord.say(channel, $.discord.userPrefix(mention) + 'Set channels with !promote channel and/or !promote streamchannel');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.nochannels'));
                 return;
             }
 
             if (action.equalsIgnoreCase('add')) {
-                if ($.inidb.GetKeyList('promoteids', '').length > 99) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Only 100 streamers may be promoted at this time. Please remove someone.');
-                    return;
-                }
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Promote whom?');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.add.nouser'));
                     return;
                 }
                 
                 var twitchID = $.username.getID(args[1]);
                 if (twitchID.equals('0')) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Account does not appear to exist in Twitch: ' + args[1]);
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.noacct', args[1]));
                     return;
                 }
                 if (args[2] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'You need to provide a short biography or use the keyword \'none\' (!promote addother user none).');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.add.nobio'));
                     return;
                 }
                 var biography = args.splice(2).join(' ');
@@ -133,48 +120,48 @@
                 }
                 $.inidb.set('promotebio', twitchID, biography);
                 $.inidb.set('promoteids', twitchID, args[1]);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will now be promoted.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.add.success', args[1]));
                 return;
             }
 
             if (action.equalsIgnoreCase('delete')) {
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Stop promoting whom?');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.del.nouser'));
                     return;
                 }
                 
                 var twitchID = $.username.getID(args[1]);
                 if (twitchID.equals('0')) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Account does not appear to exist in Twitch: ' + args[1]);
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.noacct'));
                     return;
                 }
 
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will no longer be promoted.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.del.success', args[1]));
                 return;
             }
 
             if (action.equalsIgnoreCase('channel')) {
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Use which channel for promotions? To remove current channel use !promote channel clear');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.channel.nochannel'));
                     return;
                 }
             
                 promoteChannel = args[1].replace('#', '').toLowerCase();
                 if (promoteChannel.equals('clear')) {
                     $.inidb.set('promotesettings', 'channel', '');
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Promote channel has been cleared.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.channel.cleared'));
                 } else {
                     $.inidb.set('promotesettings', 'channel', promoteChannel);
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Promote channel has been set to: #' + promoteChannel);
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.channel.success', promoteChannel));
                 }
                 return;
             }
 
             if (action.equalsIgnoreCase('streamchannel')) {
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Use which channel for stream announcements? To remove current channel use !promote streamchannel clear');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.streamchannel.nochannel'));
                     return;
                 }
             
@@ -182,55 +169,55 @@
                 if (streamChannel.equals('clear')) {
                     streamChannel = '';
                     $.inidb.set('promotesettings', 'streamchannel', '');
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Stream announcement channel has been cleared.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.streamchannel.cleared'));
                 } else {
                     $.inidb.set('promotesettings', 'streamchannel', streamChannel);
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Stream announcement channel has been set to: #' + streamChannel);
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.streamchannel.success', streamChannel));
                 }
                 return;
             }
 
             if (action.equalsIgnoreCase('revoke')) {
                 if (args[1] == undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Revoke the privilege of which user to be able to add themselves?');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.revoke.nouser'));
                     return;
                 }
 
                 var twitchID = $.username.getID(args[1]);
                 if (twitchID.equals('0')) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Account does not appear to exist in Twitch: ' + args[1]);
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.noacct', args[1]));
                     return;
                 }
 
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
                 $.inidb.set('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' has will no longer be promoted and will no longer be able to manage themselves.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.revoke.success', args[1]));
                 return;
             }
 
             if (action.equalsIgnoreCase('allow')) {
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Allow which user to be able to add themselves again?');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.allow.nouser'));
                     return;
                 }
 
                 var twitchID = $.username.getID(args[1]);
                 if (twitchID.equals('0')) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Account does not appear to exist in Twitch: ' + args[1]);
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.noacct', args[1]));
                     return;
                 }
 
                 $.inidb.del('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + args[1] + ' will be allowed to add themselves again.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.allow.success', args[1]));
                 return;
             }
 
             if (action.equalsIgnoreCase('toggleselfmanage')) {
                 if (allowSelfManage) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Users will no longer be able to manage themselves via !promote add and delete.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.toggleselfmanage.off'));
                 } else {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Users will now be able to manage themselves via !promote add and delete.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.toggleselfmanage.off'));
                 }
                 allowSelfManage = !allowSelfManage;
                 $.setIniDbBoolean('promotesettings', 'allowselfmanage', allowSelfManage);
@@ -239,9 +226,9 @@
 
             if (action.equalsIgnoreCase('togglestats')) {
                 if (showStats) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Stats will no longer show when a stream is announced.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.togglestats.off'));
                 } else {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Stats will show when a stream is announced.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.togglestats.on'));
                 }
                 showStats = !showStats;
                 $.setIniDbBoolean('promotesettings', 'showstats', showStats);
@@ -250,9 +237,9 @@
 
             if (action.equalsIgnoreCase('togglebanner')) {
                 if (showBanner) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Banners will no longer show when a stream is announced.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.togglebanner.off'));
                 } else {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Banners will show when a stream is announced.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.togglebanner.on'));
                 }
                 showBanner = !showBanner;
                 $.setIniDbBoolean('promotesettings', 'showbanner', showBanner);
@@ -263,7 +250,7 @@
             if (action.equalsIgnoreCase('list')) {
                 var twitchIDs = $.inidb.GetKeyList('promoteids', '');
                 if (twitchIDs.length === 0) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'No users are presently being promoted.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.list.empty'));
                     return;
                 }
 
@@ -272,29 +259,54 @@
                     twitchNames.push($.inidb.get('promoteids', twitchIDs[i]));   
                 }
                 
-                $.discord.say(channel, $.discord.userPrefix(mention) + 'Users being promoted: ' + twitchNames.join(', '));
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.list.success', twitchNames.join(', ')));
                 return;
             }
 
             if (action.equalsIgnoreCase('setinterval')) {
                 if (args[1] === undefined) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Provide an interval in minutes.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.setinterval.nominutes'));
                     return;
                 }
                 if (isNaN(args[1])) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'Provide an interval in minutes.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.setinterval.nominutes'));
                     return;
                 }
                 var newPromoteInterval = parseInt(args[1]);
                 if (newPromoteInterval < 15) {
-                    $.discord.say(channel, $.discord.userPrefix(mention) + 'The interval should be 15 minutes or more as to not spam the channel.');
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.setinterval.toolow'));
                     return;
                 }
                 $.setIniDbNumber('promotesettings', 'promoteinterval', newPromoteInterval);
                 promoteInterval = newPromoteInterval;
-                $.discord.say(channel, $.discord.userPrefix(mention) + 'The interval for promoting streamers has been set to ' + promoteInterval + ' minutes.');
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.setinterval.success', promoteInterval));
                 startPromote();
                 return;
+            }
+
+            if (action.equalsIgnoreCase('so')) {
+                if (args[1] === undefined) {
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.so.nouser'));
+                    return;
+                }
+                var twitchID = $.inidb.GetKeyByValue('promoteids', '', args[1]);
+                if (twitchID === null || twitchID === undefined) {
+                    $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.so.noexist'));
+                    return;
+                }
+
+                var twitchName = $.inidb.get('promoteids', twitchID);
+                var biography = $.inidb.get('promotebio', twitchID);
+                if (biography.equals('')) {
+                    biography = 'No biography provided.';
+                }
+                $.discordAPI.sendMessageEmbed($.inidb.get('promotesettings', 'channel'), new Packages.sx.blah.discord.util.EmbedBuilder()
+                                              .withThumbnail('http://iotv.me/i/followontwitch.jpg')
+                                              .withTitle('https://twitch.tv/' + twitchName)
+                                              .withDesc($.lang.get('discord.promotesystem.promotemsg.description', $.username.resolve(twitchName)))
+                                              .withColor(31, 158, 242)
+                                              .appendField($.lang.get('discord.promotesystem.promotemsg.biography'), biography, true)
+                                              .withUrl('https://twitch.tv/' + twitchName).build());
             }
         }
     });
@@ -311,60 +323,70 @@
         if (twitchIDs.length === 0) {
             return;
         }
-        var queryString = twitchIDs.join(',') + '&stream_type=live';
-        var jsonObject = $.twitch.GetStreams(queryString);
+        var start = 0;
+        var end = 100;
+        var total = twitchIDs.length;
 
-        if (!jsonObject.has('_total') || !jsonObject.has('streams')) {
-            return;
-        }
+        do {
+            var queryString = twitchIDs.slice(start, end).join(',') + '&stream_type=live';
+            var jsonObject = $.twitch.GetStreams(queryString);
 
-        if (jsonObject.getInt('_total') === 0) {
-            return;
-        }
+            start += 100;
+            end += 100;
 
-        var liveStreamers = [];
-        var jsonStreams = jsonObject.getJSONArray('streams');
-        for (var i = 0; i < jsonStreams.length(); i++) {
-            var twitchID = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('_id').toString();
-            var logoUrl = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('logo');
-            var url = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('url');
-            var game = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('game');
-            var title = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('status');
-            var twitchName = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('display_name');
-            var followers = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('followers');
-            var views = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('views');
-            var banner = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('profile_banner');
-            liveStreamers.push(twitchID);
-
-            if (!$.inidb.exists('promoteonline', twitchID)) {
-                if ($.systemTime() - $.getIniDbNumber('promoteonlinetime', twitchID, 0) >= (6e4 * 5)) {
-                    $.inidb.set('promoteonlinetime', twitchID, $.systemTime());
-                    var embedBuilder = new Packages.sx.blah.discord.util.EmbedBuilder();
-                    embedBuilder.withThumbnail(logoUrl)
-                                .withTitle($.username.resolve(twitchName) + ' is LIVE @ https://twitch.tv/' + twitchName)
-                                .withColor(100, 65, 164)
-                                .withTimestamp(Date.now())
-                                .appendField('Now Playing', game, true)
-                                .appendField('Stream Title', title, true);
-
-                    if (showStats) {
-                        embedBuilder.appendField('Followers', followers, true).appendField('Views', views, true);
+            if (!jsonObject.has('_total') || !jsonObject.has('streams')) {
+                return;
+            }
+    
+            if (jsonObject.getInt('_total') === 0) {
+                return;
+            }
+    
+            var liveStreamers = [];
+            var jsonStreams = jsonObject.getJSONArray('streams');
+            for (var i = 0; i < jsonStreams.length(); i++) {
+                var twitchID = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('_id').toString();
+                var logoUrl = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('logo');
+                var url = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('url');
+                var game = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('game');
+                var title = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('status');
+                var twitchName = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('display_name');
+                var followers = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('followers');
+                var views = jsonStreams.getJSONObject(i).getJSONObject('channel').getInt('views');
+                var banner = jsonStreams.getJSONObject(i).getJSONObject('channel').getString('profile_banner');
+                liveStreamers.push(twitchID);
+    
+                if (!$.inidb.exists('promoteonline', twitchID)) {
+                    if ($.systemTime() - $.getIniDbNumber('promoteonlinetime', twitchID, 0) >= (6e4 * 5)) {
+                        $.inidb.set('promoteonlinetime', twitchID, $.systemTime());
+                        var embedBuilder = new Packages.sx.blah.discord.util.EmbedBuilder();
+                        embedBuilder.withThumbnail(logoUrl)
+                                    .withTitle($.lang.get('discord.promotesystem.livemsg.title', $.username.resolve(twitchName), twitchName))
+                                    .withColor(100, 65, 164)
+                                    .withTimestamp(Date.now())
+                                    .appendField($.lang.get('discord.promotesystem.livemsg.nowplaying'), game, true)
+                                    .appendField($.lang.get('discord.promotesystem.livemsg.streamtitle'), title, true);
+    
+                        if (showStats) {
+                            embedBuilder.appendField($.lang.get('discord.promotesystem.livemsg.followers'), followers, true)
+                                        .appendField($.lang.get('discord.promotesystem.livemsg.views'), views, true);
+                        }
+                        if (banner != null && showBanner) {
+                            embedBuilder.withImage(banner)
+                        }
+     
+                        embedBuilder.withFooterText($.inidb.get('promotebio', twitchID))
+                                    .withUrl('https://twitch.tv/' + twitchName);
+                        $.discordAPI.sendMessageEmbed($.inidb.get('promotesettings', 'streamchannel'), embedBuilder.build());
                     }
-                    if (banner != null && showBanner) {
-                        embedBuilder.withImage(banner)
-                    }
- 
-                    embedBuilder.withFooterText($.inidb.get('promotebio', twitchID))
-                                .withUrl('https://twitch.tv/' + twitchName);
-                    $.discordAPI.sendMessageEmbed($.inidb.get('promotesettings', 'streamchannel'), embedBuilder.build());
                 }
             }
-        }
-
-        $.inidb.RemoveFile('promoteonline');
-        for (var i = 0; i < liveStreamers.length; i++) {
-            $.inidb.set('promoteonline', liveStreamers[i], $.inidb.get('promoteids', liveStreamers[i]));
-        }
+    
+            $.inidb.RemoveFile('promoteonline');
+            for (var i = 0; i < liveStreamers.length; i++) {
+                $.inidb.set('promoteonline', liveStreamers[i], $.inidb.get('promoteids', liveStreamers[i]));
+            }
+        } while (start < total);
     }, 6e4, 'scripts::promote.js::checkstreams');
 
     /**
@@ -399,9 +421,9 @@
             $.discordAPI.sendMessageEmbed($.inidb.get('promotesettings', 'channel'), new Packages.sx.blah.discord.util.EmbedBuilder()
                                           .withThumbnail('http://iotv.me/i/followontwitch.jpg')
                                           .withTitle('https://twitch.tv/' + twitchName)
-                                          .withDesc('Be sure to follow and check out ' + $.username.resolve(twitchName))
+                                          .withDesc($.lang.get('discord.promotesystem.promotemsg.description', $.username.resolve(twitchName)))
                                           .withColor(31, 158, 242)
-                                          .appendField('Bio', biography, true)
+                                          .appendField($.lang.get('discord.promotesystem.promotemsg.biography'), biography, true)
                                           .withUrl('https://twitch.tv/' + twitchName).build());
         }, promoteInterval * 6e4, 'scripts::promote.js::biography'); 
     }
@@ -410,8 +432,8 @@
      * @event initReady
      */
     $.bind('initReady', function() {
-        $.discord.registerCommand('./custom/promote.js', 'promote', 0);
-        $.discord.registerCommand('./custom/promote.js', 'promoteadm', 1);
+        $.discord.registerCommand('./custom/promoteSystem.js', 'promote', 0);
+        $.discord.registerCommand('./custom/promoteSystem.js', 'promoteadm', 1);
         $.discord.registerSubCommand('promote', 'add', 0);
         $.discord.registerSubCommand('promote', 'delete', 0);
         $.discord.registerSubCommand('promoteadm', 'add', 1);
@@ -424,6 +446,7 @@
         $.discord.registerSubCommand('promoteadm', 'list', 1);
         $.discord.registerSubCommand('promoteadm', 'setinterval', 1);
         $.discord.registerSubCommand('promoteadm', 'togglestats', 1);
+        $.discord.registerSubCommand('promoteadm', 'so', 1);
 
         startPromote();
     });
