@@ -75,15 +75,15 @@
                     biography = '';
                 }
                 $.inidb.set('promotebio', twitchID, biography);
-                $.inidb.set('promoteids', twitchID, twitchName);
-                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.add.success', twitchName));
+                $.inidb.set('promoteids', twitchID, twitchName.toLowerCase());
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.add.success', twitchName.toLowerCase()));
                 return;
             }
 
             if (action.equalsIgnoreCase('delete')) {
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.del.success', twitchName));
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promote.del.success', twitchName.toLowerCase()));
                 return;
             }
         }
@@ -119,8 +119,8 @@
                     biography = '';
                 }
                 $.inidb.set('promotebio', twitchID, biography);
-                $.inidb.set('promoteids', twitchID, args[1]);
-                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.add.success', args[1]));
+                $.inidb.set('promoteids', twitchID, args[1].toLowerCase());
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.add.success', args[1].toLowerCase()));
                 return;
             }
 
@@ -138,7 +138,7 @@
 
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.del.success', args[1]));
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.del.success', args[1].toLowerCase()));
                 return;
             }
 
@@ -192,7 +192,7 @@
                 $.inidb.del('promotebio', twitchID);
                 $.inidb.del('promoteids', twitchID);
                 $.inidb.set('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.revoke.success', args[1]));
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.revoke.success', args[1].toLowerCase()));
                 return;
             }
 
@@ -209,7 +209,7 @@
                 }
 
                 $.inidb.del('promoterevoke', twitchID);
-                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.allow.success', args[1]));
+                $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.promoteadm.allow.success', args[1].toLowerCase()));
                 return;
             }
 
@@ -289,7 +289,7 @@
                     $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.so.nouser'));
                     return;
                 }
-                var twitchID = $.inidb.GetKeyByValue('promoteids', '', args[1]);
+                var twitchID = $.inidb.GetKeyByValue('promoteids', '', args[1].toLowerCase());
                 if (twitchID === null || twitchID === undefined) {
                     $.discord.say(channel, $.discord.userPrefix(mention) + $.lang.get('discord.promotesystem.cmd.so.noexist'));
                     return;
