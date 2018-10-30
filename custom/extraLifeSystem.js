@@ -42,14 +42,14 @@
      * to display different text, change values here.
      */
     function pullExtraLifeTotalGoal() {
-        var url = 'http://www.extra-life.org/index.cfm?fuseaction=donordrive.participant&participantID=' + extraLifeID + '&format=json';
+        var url = 'https://www.extra-life.org/api/participants/' + extraLifeID;
         var HttpResponse = Packages.com.gmt2001.HttpResponse;
         var HttpRequest = Packages.com.gmt2001.HttpRequest;
         var HashMap = Packages.java.util.HashMap;
         var responseData = HttpRequest.getData(HttpRequest.RequestType.GET, url, "", new HashMap());
         var jsonObj = JSON.parse(responseData.content);
 
-        var totalRaised = jsonObj['totalRaisedAmount'];
+        var totalRaised = jsonObj['sumDonations'];
         var fundRaisingGoal = jsonObj['fundraisingGoal'];
 
         return 'Extra Life Donation Total Raised / Goal: ' +  totalRaised + ' / ' + fundRaisingGoal + '. Thanks for all of the support!';
@@ -63,7 +63,7 @@
      * to display different text, change values here.
      */
     function pullExtraLifeLastDonation() {
-        var url = 'http://www.extra-life.org/index.cfm?fuseaction=donorDrive.participantDonations&participantID=' + extraLifeID + '&format=json';
+        var url = 'https://www.extra-life.org/api/participants/' + extraLifeID + '/donations?limit=1';
         var HttpResponse = Packages.com.gmt2001.HttpResponse;
         var HttpRequest = Packages.com.gmt2001.HttpRequest;
         var HashMap = Packages.java.util.HashMap;
@@ -75,8 +75,8 @@
         }
 
         var message = jsonObj[0].message;
-        var donorName = jsonObj[0].donorName;
-        var donationAmount = jsonObj[0].donationAmount;
+        var donorName = jsonObj[0].displayName;
+        var donationAmount = jsonObj[0].amount;
 
         return 'Last donation was in the amount of $' + donationAmount + ' received from ' + donorName + ' with this message: ' + message;
     }
@@ -85,7 +85,7 @@
      * @function pullExtraLifeDonations
      */
     function pullExtraLifeDonationsInterval() {
-        var url = 'http://www.extra-life.org/index.cfm?fuseaction=donorDrive.participantDonations&participantID=' + extraLifeID + '&format=json';
+        var url = 'https://www.extra-life.org/api/participants/' + extraLifeID + '/donations';
         var HttpResponse = Packages.com.gmt2001.HttpResponse;
         var HttpRequest = Packages.com.gmt2001.HttpRequest;
         var HashMap = Packages.java.util.HashMap;
@@ -102,9 +102,9 @@
 
         for (var i = 0; i < jsonObj.length; i++) {
             var message = jsonObj[i].message;
-            var donorName = jsonObj[i].donorName;
-            var donationAmount = jsonObj[i].donationAmount;
-            var createdOn = jsonObj[i].createdOn;
+            var donorName = jsonObj[i].displayName;
+            var donationAmount = jsonObj[i].amountAmount;
+            var createdOn = jsonObj[i].createdDateUTC;
 
             /* As ExtraLife does not provide a unique ID for a donation, we have to assume that createdOn is unique
              * enough to use as the last donation point in combination with the donorName.
