@@ -1,9 +1,6 @@
 /*
- * This is an unsupported module for retrieving data from Extra Life.
- * As Extra Life does not officially provide an API, this module may
- * stop working or may not work as expected at any time. If there are
- * connectivity issues or if the data is not coming back as expected,
- * there is a good chance that something changed on the Extra Life side.
+ * This script utilizes the supported API from Extra Life.
+ * https://github.com/DonorDrive/PublicAPI
  *
  * No warranty is implied or provided.
  *
