@@ -121,7 +121,7 @@
                 if (message === null) {
                     message = "no message was provided";
                 }
-                $.say('Received a new donation of $' + donationAmount + ' received from ' + donorName + ' with this message: ' + message);
+                $.say('Received a new donation of $' + donationAmount + ' from ' + donorName + ' with this message: ' + message);
             }
         }
 
