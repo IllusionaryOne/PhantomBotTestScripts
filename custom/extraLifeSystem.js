@@ -103,17 +103,15 @@
         for (var i = 0; i < jsonObj.length; i++) {
             var message = jsonObj[i].message;
             var donorName = jsonObj[i].displayName;
-            var donationAmount = jsonObj[i].amountAmount;
+            var donationAmount = jsonObj[i].amount;
             var createdOn = jsonObj[i].createdDateUTC;
+            var donationID = jsonObj[i].donorID;
 
-            /* As ExtraLife does not provide a unique ID for a donation, we have to assume that createdOn is unique
-             * enough to use as the last donation point in combination with the donorName.
-             */
-            if ($.inidb.exists('extralife', donorName + '_' + createdOn)) {
+            if ($.inidb.exists('extralife', donationID)) {
                 continue;
             }
 
-            $.inidb.set('extralife', donorName + '_' + createdOn, donationAmount);
+            $.inidb.set('extralife', donationID, donationAmount);
 
             /* If this is the first time that this has ever been ran, do not output any data to chat. This way we do not spam out
              * any previous donations.  Do note that this will spam out any donations that are received within the interval window.
