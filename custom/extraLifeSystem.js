@@ -75,6 +75,10 @@
         var donorName = jsonObj[0].displayName;
         var donationAmount = jsonObj[0].amount;
 
+        if (message === null) {
+            message = "no message was provided";
+        }
+
         return 'Last donation was in the amount of $' + donationAmount + ' received from ' + donorName + ' with this message: ' + message;
     }
 
@@ -114,6 +118,9 @@
              * any previous donations.  Do note that this will spam out any donations that are received within the interval window.
              */
             if (!firstRun) {
+                if (message === null) {
+                    message = "no message was provided";
+                }
                 $.say('Received a new donation of $' + donationAmount + ' received from ' + donorName + ' with this message: ' + message);
             }
         }
