@@ -8,23 +8,8 @@
  */
 
 (function() {
-
-    /**
-     * NOTICE: YOU MUST MANUALLY CONFIGURE THIS VARIABLE HERE. THIS IS YOUR
-     * INTERNAL ID WITH EXTRALIFE. 
-     *
-     * Go to Extra Life and click the applicable link to make a donation to
-     * yourself. Look at the URL:
-     * https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=123456
-     *
-     * Copy the numerical participant ID to the following variable, keeping it within the 
-     * single quotes.
-     *
-     * The URL is calculated automatically, change it if you desire. This URL is presented
-     * in chat.
-     */
-    var extraLifeID = '';
-    var extraLifeURL = 'https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=' + extraLifeID;
+    var extraLifeID = $.getSetIniDbString('extralife', 'extraLifeID', ''),
+        extraLifeURL = 'https://www.extra-life.org/index.cfm?fuseaction=donate.participant&participantID=';
 
     /**
      * NOTICE: Presently, this does NOT use a language file! You may change the $.say()
@@ -86,6 +71,10 @@
      * @function pullExtraLifeDonations
      */
     function pullExtraLifeDonationsInterval() {
+        if (extraLifeID.length > 0) {
+            return;
+        }
+
         var url = 'https://www.extra-life.org/api/participants/' + extraLifeID + '/donations';
         var HttpResponse = Packages.com.gmt2001.HttpResponse;
         var HttpRequest = Packages.com.gmt2001.HttpRequest;
@@ -136,28 +125,50 @@
     $.bind('command', function(event) {
         var sender = event.getSender().toLowerCase(),
             command = event.getCommand(),
-            args = event.getArgs(),
-            username = (args[0] ? args[0].toLowerCase() : false);
+            args = event.getArgs();
+
+        if (command.equalsIgnoreCase('extralifeid')) {
+            if (args[0] === undefined) {
+                $.say('Please provide an ID or run \'!extralifeid remove\' to remove the ID.');
+                return;
+            }
+            if (args[0].equalsIgnoreCase('remove')) {
+                extraLifeID = '';
+                $.setIniDbString('extralife', 'extraLifeID', '');
+                $.say('Removed Extra Life ID.');
+                return;
+            }
+            if (isNaN(args[0])) {
+                $.say('Currently all Extra Life IDs are numerical.  Please check the ID.');
+                return;
+            }
+            $.say('Set Extra Life ID to ' + args[0]);
+            extraLifeID = args[1];
+            $.setIniDbString('extralife', 'extraLifeID', extraLifeID);
+        }
 
         if (command.equalsIgnoreCase('extralife')) {
-            if (extraLifeID.length == 0) {
+            if (args.length == 0 && extraLifeID.length == 0) {
                 $.say('Sorry! The caster has not setup their Extra Life ID!');
                 return;
             }
 
-            if (args.length == 0) {
-                $.say('I am participating in Extra Life! Please consider making a donation at: ' + extraLifeURL);
+            if (args.length == 0 && extraLifeID.length > 0) {
+                $.say('I am participating in Extra Life! Please consider making a donation at: ' + extraLifeURL + extraLifeID);
                 return;
             }
 
-            if (args[0].equalsIgnoreCase('total')) {
+            if (args[0].equalsIgnoreCase('total') && extraLifeID.length > 0) {
                 $.say(pullExtraLifeTotalGoal());
                 return;
             }
 
-            if (args[0].equalsIgnoreCase('last')) {
+            if (args[0].equalsIgnoreCase('last') && extraLifeID.length > 0) {
                 $.say(pullExtraLifeLastDonation());
                 return;
+            }
+
+            if (args[0].equalsIgnoreCase('setid')) {
             }
         }
 
@@ -169,12 +180,11 @@
     $.bind('initReady', function() {
         if ($.bot.isModuleEnabled('./systems/extraLifeSystem.js')) {
             $.registerChatCommand('./systems/extraLifeSystem.js', 'extralife', 7);
+            $.registerChatCommand('./systems/extraLifeSystem.js', 'extralifeid', 1);
+            $.registerChatSubcommand('extralife', 'last', 7);
+            $.registerChatSubcommand('extralife', 'total', 7);
 
-            if (extraLifeID.length > 0) {
-                setInterval(function() { pullExtraLifeDonationsInterval(); }, 20e3);
-            }
+            setInterval(function() { pullExtraLifeDonationsInterval(); }, 30e3);
         }
     });
-
-
 })();
