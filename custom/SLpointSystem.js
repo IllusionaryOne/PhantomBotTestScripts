@@ -145,7 +145,7 @@
                 return;
             }
             minimumExchange = parseInt(args[0]);
-            $.setIniDbNumber('SLpointsSettings', 'exchangeRate', minExchange);
+            $.setIniDbNumber('SLpointsSettings', 'minExchange', minimumExchange);
             $.say($.whisperPrefix(sender) + $.lang.get('slpointsystem.slexchangemin.success', minimumExchange));
             return;
         }
