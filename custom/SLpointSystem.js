@@ -19,7 +19,9 @@
  * SLpointSystem.js
  *
  * Allows for the exchange of StreamLabs loyalty points and gifting of points to all in chat.
- * Drop into the scripts/systems directory.  Requires PhantomBot 2.4.2
+ * Drop into the scripts/systems directory.  Requires PhantomBot Nightly Build 2018-11-13 (Nov 13) or newer.
+ * The !slgiveall does not work in PhantomBot 2.4.2.  The module could be used in 2.4.2 but, be sure to
+ * disable the !slgiveall command.
  */
 (function() {
     var minimumExchange = $.getSetIniDbNumber('SLpointSettings', 'minExchange', 50),
