@@ -143,7 +143,7 @@
                 return;
             }
             $.say('Set Extra Life ID to ' + args[0]);
-            extraLifeID = args[1];
+            extraLifeID = args[0];
             $.setIniDbString('extralife', 'extraLifeID', extraLifeID);
         }
 
