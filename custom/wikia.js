@@ -27,6 +27,9 @@
         var responseData = HttpRequest.getData(HttpRequest.RequestType.GET, url, "", new HashMap());
         var jsonObj = JSON.parse(responseData.content);
 
+        if (jsonObj['items'] === undefined) {
+            return 'Nothing found for ' + query;
+        }
         var title = jsonObj['items'][0]['title'];
         var postUrl = jsonObj['items'][0]['url'];
 
